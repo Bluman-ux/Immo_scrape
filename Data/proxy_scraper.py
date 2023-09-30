@@ -12,7 +12,7 @@ def get_proxies(url):
     soup = BeautifulSoup(response.text, 'html.parser')
     return [f"{tds[0].text.strip()}:{tds[1].text.strip()}" for tds in (row.find_all('td') for row in soup.select('tbody tr')) if len(tds) >= 2]
 
-### Function to Check the Health of a Proxy
+### Check Proxy
 def check_proxy(proxy_url):
     try:
         response = requests.get("http://www.example.com", proxies={"http": proxy_url, "https": proxy_url}, timeout=5)
