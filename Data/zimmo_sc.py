@@ -25,7 +25,7 @@ import pandas as pd
 import numpy as np
 
 ###Change city name###
-city_name = "Aalst"
+city_name = "Erembodegem"
 
 ###Empty Lists###
 headdict = {'Prijs':"",
@@ -174,9 +174,18 @@ driver.get(newpage)
 cookie_ok()
 
 ###Getting pagination/max pages/now page###
-max_pages = driver.find_element(By.XPATH,"/html/body/div[3]/div[3]/div[4]/div[2]/div[3]/div[3]/ul/li[13]/a/span").text
-now_t = driver.find_element(By.CLASS_NAME,"pagination")
-now_page = now_t.find_element(By.CLASS_NAME,"active").text
+try:
+    max_pages = driver.find_element(By.XPATH,"/html/body/div[3]/div[3]/div[4]/div[2]/div[3]/div[3]/ul/li[13]/a/span").text
+    now_t = driver.find_element(By.CLASS_NAME,"pagination")
+    now_page = now_t.find_element(By.CLASS_NAME,"active").text
+except:
+    ###If Number less then 10###
+    now_t = driver.find_element(By.CLASS_NAME,"pagination")
+    now_page = now_t.find_element(By.CLASS_NAME,"active").text
+    max_pageszz = driver.find_element(By.XPATH,"/html/body/div[3]/div[3]/div[4]/div[2]/div[3]/div[3]/ul").text
+    number = int(max_pageszz[-1])+1
+    max_pages = driver.find_element(By.XPATH,"/html/body/div[3]/div[3]/div[4]/div[2]/div[3]/div[3]/ul/li["+str(number)+"]/a/span").text
+    
 
 ###Finding links on the page###
 elems = driver.find_elements(By.CLASS_NAME,'property-item_link')
@@ -186,12 +195,15 @@ for elem in elems:
         urls_houses.append({"Url: ":href,"Date: ":today})
         new_urls_houses.append(href)
         
-next_t = driver.find_element(By.XPATH,"/html/body/div[3]/div[3]/div[4]/div[2]/div[3]/div[3]/ul/li[14]/a")
-next_t.click() 
+#next_t = driver.find_element(By.XPATH,"/html/body/div[3]/div[3]/div[4]/div[2]/div[3]/div[3]/ul/li[14]/a")
+next_t = driver.find_element(By.CLASS_NAME,"last")
+next_t2 = next_t.find_element(By.XPATH,".//a")
+next_t2.click() 
 time.sleep(4)
 driver.current_url
 newpage = driver.current_url
 driver.quit()
+
 ###Getting the link for pagination###
 text = newpage
 head = text.partition('=')
@@ -205,7 +217,7 @@ print(f"Elapsed Time: {elapsed_time} seconds")
 
 
 n = 0
-for x in range(2,int(max_pages)):
+for x in range(2,int(max_pages)+1):
     ###Adding a number to pagination
     n = + x
     new_page = basic+str(x)
@@ -226,7 +238,7 @@ for x in range(2,int(max_pages)):
     now_page = now_t.find_element(By.CLASS_NAME,"active").text
     pprint(now_page)
     
-    if int(now_page) < int(max_pages):
+    if int(now_page) <= int(max_pages):
         pprint("Page - "+str(now_page)+"/"+str(max_pages))
         elems = driver.find_elements(By.CLASS_NAME,'property-item_link')
         for elem in elems:
@@ -237,7 +249,7 @@ for x in range(2,int(max_pages)):
         driver.quit()
         elapsed_time = time.time() - start_time
         print(f"Elapsed Time: {elapsed_time} seconds")
-         
+        
     else:
         elems = driver.find_elements(By.CLASS_NAME,'property-item_link')
         pprint("Page - "+str(now_page)+"/"+str(max_pages))
@@ -250,7 +262,6 @@ for x in range(2,int(max_pages)):
         
         elapsed_time = time.time() - start_time
         print(f"Elapsed Time: {elapsed_time} seconds")
-
         break
 
 ###Creating dataframe###
@@ -278,54 +289,54 @@ except Exception as e:
 for n in range(1,len(all_links_new)):
     try:
         work_links = new_urls_houses[n]
+        options = webdriver.ChromeOptions()
+        ua = UserAgent()
+        user_agent = ua.random
+        options.add_argument(f"user-agent={user_agent}")
+        driver = webdriver.Chrome(service=service, options=options)
+        
+        driver.get(new_urls_houses[n])
+        cookie_ok()
+        response = driver.page_source
+        html_soup = BeautifulSoup(response, 'lxml')
+        driver.close()
+        details = html_soup.find('ul', class_='main-features')
+        days_on = html_soup.find('div', class_='stat-text text')
+        
+        popper = work_links.find("?")
+        to_print_link = work_links[:int(popper)-1]
+            
+        try:
+            split_details = list(details.stripped_strings)
+            evens = [x for x in range(len(split_details)) if x&1 == 0]
+        except:
+            pass
+        #det = {split_details[f]: split_details[f+1] for f in evens}
+        split_details.append(to_print_link)
+        try:
+            days_online = str(int(days_on.text))
+            split_details.append("Days: "+days_online)
+        except:
+            pass
+        all_details.append(split_details)
+        pprint(str(n)+"/"+str(len(all_links_new)))
+        #pprint(split_details)
+        time.sleep(5)
+        
+        elapsed_time = time.time() - start_time
+        print(f"Elapsed Time: {elapsed_time} seconds")
+        print_details = np.array(all_details,dtype=object,)
+        
+        ###Creating dataframe
+        df = pd.DataFrame(all_details)
+        # Construct the path for saving the CSV file in the subdirectory
+        csv_path = os.path.join(script_directory, subdirectory,f"ZimmoLinks_"+str(city_name)+str(today)+"_detail.csv")
+        
+        df.to_csv(csv_path, index=False, header=True)
+
     except:
         break
     
-    options = webdriver.ChromeOptions()
-    
-    ua = UserAgent()
-    user_agent = ua.random
-    options.add_argument(f"user-agent={user_agent}")
-    driver = webdriver.Chrome(service=service, options=options)
-    
-    driver.get(new_urls_houses[n])
-    cookie_ok()
-    response = driver.page_source
-    html_soup = BeautifulSoup(response, 'lxml')
-    driver.close()
-    details = html_soup.find('ul', class_='main-features')
-    days_on = html_soup.find('div', class_='stat-text text')
-    
-    popper = work_links.find("?")
-    to_print_link = work_links[:int(popper)-1]
-        
-    try:
-        split_details = list(details.stripped_strings)
-        evens = [x for x in range(len(split_details)) if x&1 == 0]
-    except:
-        pass
-    #det = {split_details[f]: split_details[f+1] for f in evens}
-    split_details.append(to_print_link)
-    try:
-        days_online = str(int(days_on.text))
-        split_details.append("Days: "+days_online)
-    except:
-        pass
-    all_details.append(split_details)
-    pprint(str(n)+"/"+str(len(all_links_new)))
-    #pprint(split_details)
-    time.sleep(5)
-    
-    elapsed_time = time.time() - start_time
-    print(f"Elapsed Time: {elapsed_time} seconds")
-
-    
-print_details = np.array(all_details,dtype=object,)
-
-# Construct the path for saving the CSV file in the subdirectory
-csv_path = os.path.join(script_directory, subdirectory,f"ZimmoLinks_"+str(city_name)+str(today)+"_detail.csv")
-df.to_csv(csv_path, index=False, header=True)
-
 try:
     with open(csv_path, newline='') as f:
         reader = csv.reader(f, delimiter=",")
