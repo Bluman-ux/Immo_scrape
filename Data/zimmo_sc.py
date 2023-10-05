@@ -23,12 +23,14 @@ from collections import Counter
 import re
 import pandas as pd
 import numpy as np
+import datetime
 
 ###Change city name###
-city_name = "Erembodegem"
+city_name = "Aalst"
 
 ###Empty Lists###
-headdict = {'Prijs':"",
+headdict = {'Code':"",
+            'Prijs':"",  
              'Adres':"",
              'Stad':"",
              'Type':"",
@@ -44,7 +46,12 @@ headdict = {'Prijs':"",
              'Dagen':"",
              'Link':"",
              'Handelsopp.':"",
+             'First':"",
+             'Last':"",
+             'Scraped':""
              }
+
+
 head = ['Prijs','Adres','Type','Bouwjaar','EPC','Woonopp.','Slaapkamers','Badkamers','Grondopp.','Bebouwing','Garages','Tuin','Garage']
 urls_houses = []
 new_urls_houses = []
@@ -93,13 +100,37 @@ def scroll_list(work_list):
 
 def c_database(all_data):
     new_temp = []
-    for i in range(0,int(len(all_data))):
+    for i in range(0, int(len(all_data))):
         work_list = all_data[i]
         tempered_list = scroll_list(work_list)
         new_temp.append(tempered_list)
+
     df = pd.DataFrame(new_temp[0], index=range(1), columns=list(headdict.keys()))
-    for i in range(0,int(len(new_temp))):
+
+    for i in range(0, int(len(new_temp))):
         df = df.append(new_temp[i], True)
+
+    # Create a new column with the current date
+    current_date = datetime.datetime.now().date()
+    df['Scraped'] = current_date
+
+    # Convert 'Dagen' column to numeric
+    df['Dagen'] = pd.to_numeric(df['Dagen'], errors='coerce')
+
+    # Fill missing values in 'Scraped' column with a default date (e.g., current date)
+    df['Scraped'].fillna(current_date, inplace=True)
+
+    # Convert 'Scraped' column to datetime format
+    df['Scraped'] = pd.to_datetime(df['Scraped'], errors='coerce')
+
+    # Subtract 'Dagen' from 'Scraped' and create a new column 'Result'
+    df['First'] = df['Scraped'] - pd.to_timedelta(df['Dagen'], unit='D')
+
+    link_column = 'Link'
+    # Extract the last five elements from the link column
+    df['Code'] = df[link_column].str[-5:]
+    column_order = ['Code'] + [col for col in df.columns if col not in ['Code']]
+    df = df[column_order]
     return df
 
 def cookie_ok():
@@ -119,7 +150,6 @@ def city_input(city):
     searchbutton = driver.find_element(By.XPATH,"/html/body/div[3]/div[3]/div[1]/div[1]/zimmo-search-form/div[1]/button")
     time.sleep(4)
     searchbutton.click()   
-
 
 ### GETTING TO THE FIRST PAGE AND INPUT CITY NAME ###
 
@@ -348,5 +378,17 @@ except Exception as e:
 
 df = c_database(all_data)
 
-csv_path = os.path.join(script_directory, subdirectory,f"Database_"+str(city_name)+str(today)+"_detailComp.tsv")
-df.to_csv(csv_path, index=False, header=True, sep = '\t')
+# Specify the file path
+file_path = r"C:\Users\Ivan\Desktop\Python\Immo_scraper\Data\Data\Final_File.csv"
+
+# Read the CSV file into a DataFrame
+df_initial = pd.read_csv(file_path)
+    
+# Concatenate the existing df and full_df
+final_df = pd.concat([df, df_initial], ignore_index=True)
+
+output_path = r"C:\Users\Ivan\Desktop\Python\Immo_scraper\Data\Data\Final_File.csv"
+final_df.to_csv(output_path, index=False)
+
+#csv_path = os.path.join(script_directory, subdirectory,f"Database_detail"+str(city_name)+str(today)+".tsv")
+#df.to_csv(csv_path, index=False, header=True, sep = '\t')
