@@ -32,3 +32,4 @@
 - Pandas
 - NumPy
 - Fake UserAgent
+- SQLite3

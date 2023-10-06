@@ -194,6 +194,11 @@ user_agent = ua.random
 
 ###Set the fake user agent###
 options.add_argument(f"user-agent={user_agent}")
+
+###Add options to disable notifications and run headless###
+options.add_argument("--disable-notifications")
+options.add_argument("--headless")
+
 ###Specify the path to the ChromeDriver executable###
 service = Service(executable_path='C:\\Program Files (x86)\\chromedriver.exe')
 options = webdriver.ChromeOptions()
@@ -256,6 +261,10 @@ for x in range(2,int(max_pages)+1):
     ua = UserAgent()
     user_agent = ua.random
     options.add_argument(f"user-agent={user_agent}")
+    ###Add options to disable notifications and run headless###
+    options.add_argument("--disable-notifications")
+    options.add_argument("--headless")
+    
     options = webdriver.ChromeOptions()
     driver = webdriver.Chrome(service=service, options=options)
     driver.get(new_page)
@@ -323,6 +332,9 @@ for n in range(1,len(all_links_new)):
         ua = UserAgent()
         user_agent = ua.random
         options.add_argument(f"user-agent={user_agent}")
+        ###Add options to disable notifications and run headless###
+        options.add_argument("--disable-notifications")
+        options.add_argument("--headless")
         driver = webdriver.Chrome(service=service, options=options)
         
         driver.get(new_urls_houses[n])
