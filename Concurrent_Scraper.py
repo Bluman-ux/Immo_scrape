@@ -2,6 +2,7 @@
 import nest_asyncio
 nest_asyncio.apply()
 
+###Adjust number of workers line 350 somewhere there... Don't remember.
 
 ###Imports###
 import os
@@ -24,7 +25,7 @@ import re
 import pandas as pd
 import numpy as np
 import datetime
-import concurrent.futures  # Import concurrent.futures for parallel processing
+import concurrent.futures
 
 ###Change city name###
 city_name = "Gent"

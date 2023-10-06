@@ -18,7 +18,7 @@
 - **City Selection:** Specify the city for which you want to scrape real estate data.
 - **Pagination Handling:** The script handles pagination to retrieve data from multiple pages.
 - **Data Cleaning:** The scraped data is processed and cleaned for better readability.
-- [̶P̶a̶r̶a̶l̶l̶e̶l̶ ̶P̶r̶o̶c̶e̶s̶s̶i̶n̶g̶:̶ ̶C̶o̶n̶c̶u̶r̶r̶e̶n̶t̶ ̶e̶x̶e̶c̶u̶t̶i̶o̶n̶ ̶f̶o̶r̶ ̶i̶m̶p̶r̶o̶v̶e̶d̶ ̶p̶e̶r̶f̶o̶r̶m̶a̶n̶c̶e̶ ̶u̶s̶i̶n̶g̶ ̶`̶c̶o̶n̶c̶u̶r̶r̶e̶n̶t̶.̶f̶u̶t̶u̶r̶e̶s̶`̶]̶ ̶
+- **Parallel Processing:** Concurrent execution for imporved performance using 'concurent.futures'
 - **Elapsed Time Logging:** The elapsed time is logged at various points to monitor script performance.
 
 ## Prerequisites
@@ -33,3 +33,4 @@
 - NumPy
 - Fake UserAgent
 - SQLite3
+- Concurrent.futures
