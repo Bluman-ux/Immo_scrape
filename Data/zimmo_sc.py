@@ -26,7 +26,7 @@ import numpy as np
 import datetime
 
 ###Change city name###
-city_name = "Aalst"
+city_name = "Erembodegem"
 
 ###Empty Lists###
 headdict = {'Code':"",
@@ -378,17 +378,48 @@ except Exception as e:
 
 df = c_database(all_data)
 
-# Specify the file path
-file_path = r"C:\Users\Ivan\Desktop\Python\Immo_scraper\Data\Data\Final_File.csv"
+###This just for backup
+file_path_city_only = os.path.join(script_directory, subdirectory,f"Final_File_"+str(city_name)+".csv")
+###Trying to create database per city###
+try:
+    if os.path.exists(file_path_city_only):
+        df_initial_city = pd.read_csv(file_path_city_only)
+        final_df_city = pd.concat([df, df_initial_city], ignore_index=True)
+        final_df_city.to_csv(file_path_city_only, index=False, header=True)
+    else:
+        try:
+            initial = os.path.join(script_directory, subdirectory,f"Initial_File.csv")
+        except:
+            print("Can not open initial file for  "+str(city_name)+", bruv.")
+        df_initial_city = pd.read_csv(initial)
+        try:
+            final_df_city = pd.concat([df, df_initial_city], ignore_index=True)
+        except:
+            print("Cannot concat initial file and the new DataFrame")
+        final_df_city.to_csv(file_path_city_only, index=False, header=True)  
+except:
+    print("Can not open saved CSV-link file "+str(city_name)+" cuz there is no, bruv.")
 
-# Read the CSV file into a DataFrame
-df_initial = pd.read_csv(file_path)
+
+###Trying to create database - Total###
+file_path_full = os.path.join(script_directory, subdirectory,f"Final_File.csv")
+try:
+    if os.path.exists(file_path_full):
+        df_initial = pd.read_csv(file_path_full)
+        final_df = pd.concat([df, df_initial], ignore_index=True)
+        output_path = os.path.join(script_directory, subdirectory,f"Final_File.csv")
+    else:
+        try:
+            initial = os.path.join(script_directory, subdirectory,f"Initial_File.csv")
+        except:
+            print("Can not open initial file for  "+str(city_name)+", bruv.")
+        df_initial = pd.read_csv(initial)
+        try:
+            final_df = pd.concat([df, df_initial], ignore_index=True)
+        except:
+            print("Cannot concat initial file and the new DataFrame")
+except:
+    print("Can not open saved CSV-link file full file cuz there is no, bruv.")
     
-# Concatenate the existing df and full_df
-final_df = pd.concat([df, df_initial], ignore_index=True)
-
-output_path = r"C:\Users\Ivan\Desktop\Python\Immo_scraper\Data\Data\Final_File.csv"
+output_path = os.path.join(script_directory, subdirectory,f"Final_File.csv")
 final_df.to_csv(output_path, index=False)
-
-#csv_path = os.path.join(script_directory, subdirectory,f"Database_detail"+str(city_name)+str(today)+".tsv")
-#df.to_csv(csv_path, index=False, header=True, sep = '\t')
