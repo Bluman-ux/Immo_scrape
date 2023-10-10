@@ -28,7 +28,7 @@ import datetime
 import concurrent.futures
 
 ###Change city name###
-city_name = "Gent"
+city_name = "Brussel"
 
 ###Empty Lists###
 headdict = {'Code':"",
@@ -38,23 +38,23 @@ headdict = {'Code':"",
              'Type':"",
              'Bouwjaar':"",
              'EPC':"",
-             'Woonopp.':"",
+             'Woonopp':"",
              'Slaapkamers':"",
              'Badkamers':"",
-             'Grondopp.':"",
+             'Grondopp':"",
              'Bebouwing':"",
              'Garages':"",
              'Tuin':"",
              'Dagen':"",
              'Link':"",
-             'Handelsopp.':"",
+             'Handelsopp':"",
              'First':"",
              'Last':"",
              'Scraped':""
              }
 
 
-head = ['Prijs','Adres','Type','Bouwjaar','EPC','Woonopp.','Slaapkamers','Badkamers','Grondopp.','Bebouwing','Garages','Tuin','Garage']
+head = ['Prijs','Adres','Type','Bouwjaar','EPC','Woonopp','Slaapkamers','Badkamers','Grondopp','Bebouwing','Garages','Tuin','Garage']
 urls_houses = []
 new_urls_houses = []
 
@@ -232,6 +232,7 @@ if __name__ == "__main__":
     ua = UserAgent()
     user_agent = ua.random
 
+    options = webdriver.ChromeOptions()
     ###Set the fake user agent###
     options.add_argument(f"user-agent={user_agent}")
     
@@ -240,7 +241,7 @@ if __name__ == "__main__":
     options.add_argument("--headless")
     ###Specify the path to the ChromeDriver executable###
     service = Service(executable_path='C:\\Program Files (x86)\\chromedriver.exe')
-    options = webdriver.ChromeOptions()
+    
     driver = webdriver.Chrome(service=service, options=options)
     ###Getting the page###
     driver.get(newpage)
@@ -290,7 +291,7 @@ if __name__ == "__main__":
         ###Adding a number to pagination###
         n = + x
         new_page = basic+str(x)
-
+        options = webdriver.ChromeOptions()
         ##Starting the sriver
         ua = UserAgent()
         user_agent = ua.random
@@ -299,7 +300,7 @@ if __name__ == "__main__":
         options.add_argument("--disable-notifications")
         options.add_argument("--headless")
         
-        options = webdriver.ChromeOptions()
+        
         driver = webdriver.Chrome(service=service, options=options)
         driver.get(new_page)
         

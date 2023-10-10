@@ -1,6 +1,4 @@
-Code,Prijs,Adres,Stad,Type,Bouwjaar,EPC,Woonopp.,Slaapkamers,Badkamers,Grondopp.,Bebouwing,Garages,Tuin,Dagen,Link,Handelsopp.,First,Last,Scraped
-,,,,,,,,,,,,,,,,,,,2023-10-06
-,,,,,,,,,,,,,,,,,,,2023-10-06
+Code,Prijs,Adres,Stad,Type,Bouwjaar,EPC,Woonopp,Slaapkamers,Badkamers,Grondopp,Bebouwing,Garages,Tuin,Dagen,Link,Handelsopp,First,Last,Scraped
 KAXYX,18000, Sassevaartstraat 41,9000 Gent , Garage ,2016, Inaanvraag ,,,,, opaanvraag Â»,,,10.0,https://www.zimmo.be/nl/gent-9000/te-koop/garage/KAXYX,,2023-09-26,,2023-10-06
 KGF5E,359000, Keizer Karelstraat 198/1.01,9000 Gent , Appartement , opaanvraag Â»,159 k Wh / m Â²,70,2,2,, opaanvraag Â»,,,66.0,https://www.zimmo.be/nl/gent-9000/te-koop/appartement/KGF5E,,2023-08-01,,2023-10-06
 KICUX,339000, Peter Benoitlaan 102,9050 Gentbrugge , Woning ( Huis ),1994,152 k Wh / m Â²,150,2,1,200, gesloten ,1,,41.0,https://www.zimmo.be/nl/gentbrugge-9050/te-koop/huis/KICUX,,2023-08-26,,2023-10-06
