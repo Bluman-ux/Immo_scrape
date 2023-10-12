@@ -26,9 +26,10 @@ import pandas as pd
 import numpy as np
 import datetime
 import concurrent.futures
+import string
 
 ###Change city name###
-city_name = "Brussel"
+city_name = "Gent"
 
 ###Empty Lists###
 headdict = {'Code':"",
@@ -38,23 +39,23 @@ headdict = {'Code':"",
              'Type':"",
              'Bouwjaar':"",
              'EPC':"",
-             'Woonopp':"",
+             'Woonopp.':"",
              'Slaapkamers':"",
              'Badkamers':"",
-             'Grondopp':"",
+             'Grondopp.':"",
              'Bebouwing':"",
              'Garages':"",
              'Tuin':"",
              'Dagen':"",
              'Link':"",
-             'Handelsopp':"",
+             'Handelsopp.':"",
              'First':"",
              'Last':"",
              'Scraped':""
              }
 
 
-head = ['Prijs','Adres','Type','Bouwjaar','EPC','Woonopp','Slaapkamers','Badkamers','Grondopp','Bebouwing','Garages','Tuin','Garage']
+head = ['Prijs','Adres','Type','Bouwjaar','EPC','Woonopp.','Slaapkamers','Badkamers','Grondopp.','Bebouwing','Garages','Tuin','Garage']
 urls_houses = []
 new_urls_houses = []
 
@@ -68,6 +69,16 @@ subdirectory = "Data"
 today = date.today()
 today = today.strftime("%d-%m-%Y")
 start_time = time.time()
+
+def remove_periods_from_headers(filename):
+    # Load CSV into a DataFrame
+    df = pd.read_csv(filename)
+    
+    # Remove periods from column headers
+    df.columns = [col.replace('.', '') for col in df.columns]
+    
+    # Save the modified DataFrame back to the same CSV file
+    df.to_csv(filename, index=False)
 
 def scroll_list(work_list):
     newlist = []
@@ -394,13 +405,14 @@ if __name__ == "__main__":
         else:
             try:
                 initial = os.path.join(script_directory, subdirectory,f"Initial_File.csv")
+                df_initial_city = pd.read_csv(initial)
             except:
-                print("Can not open initial file for  "+str(city_name)+", bruv.")
-            df_initial_city = pd.read_csv(initial)
+                print("Can not open initial file for  "+str(city_name)+", bruv.")             
             try:
                 final_df_city = pd.concat([df, df_initial_city], ignore_index=True)
             except:
                 print("Cannot concat initial file and the new DataFrame")
+                
             final_df_city.to_csv(file_path_city_only, index=False, header=True)  
     except:
         print("Can not open saved CSV-link file "+str(city_name)+" cuz there is no, bruv.")
@@ -411,14 +423,16 @@ if __name__ == "__main__":
     try:
         if os.path.exists(file_path_full):
             df_initial = pd.read_csv(file_path_full)
-            final_df = pd.concat([df, df_initial], ignore_index=True)
+            final_df = pd.concat([df, df_initial], ignore_index=True)          
             output_path = os.path.join(script_directory, subdirectory,f"Final_File.csv")
         else:
             try:
                 initial = os.path.join(script_directory, subdirectory,f"Initial_File.csv")
             except:
                 print("Can not open initial file for  "+str(city_name)+", bruv.")
+                
             df_initial = pd.read_csv(initial)
+            
             try:
                 final_df = pd.concat([df, df_initial], ignore_index=True)
             except:
@@ -428,5 +442,10 @@ if __name__ == "__main__":
         
     output_path = os.path.join(script_directory, subdirectory,f"Final_File.csv")
     final_df.to_csv(output_path, index=False)
-    
-    
+
+# List of your filenames
+files = [output_path, file_path_city_only]
+
+# Process each file
+for file in files:
+    remove_periods_from_headers(file)
